@@ -87,7 +87,7 @@ func (g *generator) generateFile(file *descriptor.FileDescriptorProto) *plugin.C
 	g.P(`require 'twirp'`)
 	g.P(``)
 	if pkgName != "" {
-		g.P(fmt.Sprintf("module %s", CamelCase(pkgName)))
+		g.P(fmt.Sprintf("module %s", AsModuleName(pkgName)))
 		indent = indent + "  "
 	}
 	for i, service := range file.Service {
@@ -151,6 +151,15 @@ func serviceName(service *descriptor.ServiceDescriptorProto) string {
 
 func methodName(method *descriptor.MethodDescriptorProto) string {
 	return method.GetName()
+}
+
+func AsModuleName(name string) string {
+	split := strings.Split(name, ".")
+	var res []string
+	for _, s := range split {
+		res = append(res, CamelCase(s))
+	}
+	return strings.Join(res, "::")
 }
 
 // methodInputName returns the basename of the input type of a method in snake
